@@ -11,13 +11,13 @@ public sealed class StatisticsController(ISender sender) : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status503ServiceUnavailable)]
     public async Task<ActionResult<StatistiquesDto>> GetStatistics(CancellationToken cancellationToken)
     {
-        var country = await sender.Send(new GetGrandRatioPartiesGagneesQuery(), cancellationToken);
+        var pays = await sender.Send(new GetGrandRatioPartiesGagneesQuery(), cancellationToken);
         var imcMoyen = await sender.Send(new GetIMCJoueursQuery(), cancellationToken);
         var medianne = await sender.Send(new GetMedianneTailleJoueursQuery(), cancellationToken);
 
         return Ok(new StatistiquesDto
         {
-            Country = country,
+            Pays = pays,
             IMC = imcMoyen,
             Medianne = medianne
         });

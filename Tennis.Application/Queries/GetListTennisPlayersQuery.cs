@@ -1,3 +1,3 @@
 namespace Tennis.Application.Queries;
 
-public sealed record GetListTennisPlayersQuery : IQuery<IReadOnlyCollection<TennisPlayerDto>>;
+public sealed record GetListTennisPlayersQuery : IQuery<IReadOnlyCollection<JoueurTennisDto>>;

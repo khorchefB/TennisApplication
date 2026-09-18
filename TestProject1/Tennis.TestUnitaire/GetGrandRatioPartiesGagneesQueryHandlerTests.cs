@@ -8,9 +8,9 @@ public class GetGrandRatioPartiesGagneesQueryHandlerTests
     public async Task Handle_DoitRetournerLePaysAvecLeMeilleurRatioDeVictoires()
     {
         var joueurSerbe = TestData.CreerJoueur(id: 1, last: [1, 1, 1, 1, 1]);
-        joueurSerbe.Country.Code = "SRB";
+        joueurSerbe.Pays.Code = "SRB";
         var joueurAmericain = TestData.CreerJoueur(id: 2, last: [1, 0, 0, 0, 0]);
-        joueurAmericain.Country.Code = "USA";
+        joueurAmericain.Pays.Code = "USA";
 
         IReadOnlyCollection<TennisJoueur> joueurs = [joueurSerbe, joueurAmericain];
         var repositoryMock = new Mock<ITennisPlayerRepository>();

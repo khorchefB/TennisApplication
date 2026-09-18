@@ -15,28 +15,28 @@ internal static class TestData
         string lastname = "Player") => new()
         {
             Id = id,
-            Firstname = firstname,
-            Lastname = lastname,
-            Shortname = $"{firstname[0]}.{lastname.ToUpperInvariant()}",
-            Sex = "M",
-            Picture = "https://example.test/player.png",
-            Country = new Country
+            Prenom = firstname,
+            Nom = lastname,
+            NomCourt = $"{firstname[0]}.{lastname.ToUpperInvariant()}",
+            Sexe = "M",
+            Photo = "https://example.test/player.png",
+            Pays = new Pays
             {
                 Code = "FRA",
-                Picture = "https://example.test/france.png"
+                Photo = "https://example.test/france.png"
             },
-            Data = new PlayerData
+            Donnees = new DonneesJoueur
             {
-                Rank = rank,
+                Rang = rank,
                 Points = 1_000,
-                Weight = weight,
-                Height = height,
+                Poids = weight,
+                Taille = height,
                 Age = age,
-                Last = (last ?? [1, 1, 0, 1, 1]).ToList()
+                DerniersResultats = (last ?? [1, 1, 0, 1, 1]).ToList()
             }
         };
 
-    public static TennisPlayerDto CreerJoueurDto(
+    public static JoueurTennisDto CreerJoueurDto(
         int id,
         int rank = 1,
         int weight = 80_000,
@@ -45,24 +45,24 @@ internal static class TestData
         string lastname = "Player") => new()
         {
             Id = id,
-            Firstname = firstname,
-            Lastname = lastname,
-            Shortname = $"{firstname[0]}.{lastname.ToUpperInvariant()}",
-            Sex = "M",
-            Picture = "https://example.test/player.png",
-            Country = new CountryDto
+            Prenom = firstname,
+            Nom = lastname,
+            NomCourt = $"{firstname[0]}.{lastname.ToUpperInvariant()}",
+            Sexe = "M",
+            Photo = "https://example.test/player.png",
+            Pays = new PaysDto
             {
                 Code = "FRA",
-                Picture = "https://example.test/france.png"
+                Photo = "https://example.test/france.png"
             },
-            Data = new PlayerDataDto
+            Donnees = new DonneesJoueurDto
             {
-                Rank = rank,
+                Rang = rank,
                 Points = 1_000,
-                Weight = weight,
-                Height = height,
+                Poids = weight,
+                Taille = height,
                 Age = 25,
-                Last = [1, 1, 0, 1, 1]
+                DerniersResultats = [1, 1, 0, 1, 1]
             }
         };
 }

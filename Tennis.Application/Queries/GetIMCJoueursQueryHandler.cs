@@ -20,14 +20,14 @@ public sealed class GetIMCJoueursQueryHandler(ITennisPlayerRepository tennisPlay
 
     private static double CalculerIMC(TennisJoueur joueur)
     {
-        if (joueur.Data.Height <= 0 || joueur.Data.Weight <= 0)
+        if (joueur.Donnees.Taille <= 0 || joueur.Donnees.Poids <= 0)
         {
             throw new TennisStatisticsUnavailableException(
                 $"Les données de taille ou de poids du joueur {joueur.Id} sont invalides.");
         }
 
-        var poidsKg = joueur.Data.Weight / 1000d;
-        var tailleMetres = joueur.Data.Height / 100d;
+        var poidsKg = joueur.Donnees.Poids / 1000d;
+        var tailleMetres = joueur.Donnees.Taille / 100d;
         return poidsKg / Math.Pow(tailleMetres, 2);
     }
 }

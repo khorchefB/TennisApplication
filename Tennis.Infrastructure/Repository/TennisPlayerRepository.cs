@@ -21,14 +21,14 @@ public sealed class TennisPlayerRepository : ITennisPlayerRepository, IHostedSer
         try
         {
             var json = await File.ReadAllTextAsync(path, cancellationToken);
-            var players = JsonSerializer.Deserialize<TennisPlayers>(json, JsonOptions)
+            var players = JsonSerializer.Deserialize<JoueursTennis>(json, JsonOptions)
                 ?? throw new JsonException("Le fichier des joueurs ne contient aucune donnée exploitable.");
 
             await _playersLock.WaitAsync(cancellationToken);
             try
             {
                 _players.Clear();
-                _players.AddRange(players.Players);
+                _players.AddRange(players.Joueurs);
             }
             finally
             {

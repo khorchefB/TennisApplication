@@ -1,3 +1,3 @@
 namespace Tennis.Application.Commands;
 
-public sealed record AjouterTennisJoueurCommand(TennisPlayerDto Joueur) : ICommand<TennisPlayerDto>;
+public sealed record AjouterTennisJoueurCommand(JoueurTennisDto Joueur) : ICommand<JoueurTennisDto>;

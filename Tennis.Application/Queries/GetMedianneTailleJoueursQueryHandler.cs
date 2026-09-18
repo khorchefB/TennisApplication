@@ -10,7 +10,7 @@ public sealed class GetMedianneTailleJoueursQueryHandler(ITennisPlayerRepository
         CancellationToken cancellationToken)
     {
         var hauteurs = (await tennisPlayerRepository.GetTennisJoueurs(cancellationToken))
-            .Select(joueur => joueur.Data.Height)
+            .Select(joueur => joueur.Donnees.Taille)
             .OrderBy(hauteur => hauteur)
             .ToArray();
 

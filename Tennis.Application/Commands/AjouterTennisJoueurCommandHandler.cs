@@ -3,9 +3,9 @@ using Tennis.Domain.Models;
 namespace Tennis.Application.Commands;
 
 public sealed class AjouterTennisJoueurCommandHandler(ITennisPlayerRepository tennisPlayerRepository)
-    : ICommandHandler<AjouterTennisJoueurCommand, TennisPlayerDto>
+    : ICommandHandler<AjouterTennisJoueurCommand, JoueurTennisDto>
 {
-    public async Task<TennisPlayerDto> Handle(
+    public async Task<JoueurTennisDto> Handle(
         AjouterTennisJoueurCommand request,
         CancellationToken cancellationToken)
     {
@@ -14,6 +14,6 @@ public sealed class AjouterTennisJoueurCommandHandler(ITennisPlayerRepository te
         var joueur = request.Joueur.Adapt<TennisJoueur>();
         var joueurAjoute = await tennisPlayerRepository.AjouterTennisJoueur(joueur, cancellationToken);
 
-        return joueurAjoute.Adapt<TennisPlayerDto>();
+        return joueurAjoute.Adapt<JoueurTennisDto>();
     }
 }

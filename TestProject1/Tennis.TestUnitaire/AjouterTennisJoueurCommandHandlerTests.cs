@@ -20,15 +20,15 @@ public class AjouterTennisJoueurCommandHandlerTests
             CancellationToken.None);
 
         Assert.Equal(joueur.Id, resultat.Id);
-        Assert.Equal(joueur.Firstname, resultat.Firstname);
-        Assert.Equal(joueur.Lastname, resultat.Lastname);
+        Assert.Equal(joueur.Prenom, resultat.Prenom);
+        Assert.Equal(joueur.Nom, resultat.Nom);
 
         repositoryMock.Verify(
             repository => repository.AjouterTennisJoueur(
                 It.Is<TennisJoueur>(joueurAjoute =>
                     joueurAjoute.Id == joueur.Id &&
-                    joueurAjoute.Firstname == joueur.Firstname &&
-                    joueurAjoute.Lastname == joueur.Lastname),
+                    joueurAjoute.Prenom == joueur.Prenom &&
+                    joueurAjoute.Nom == joueur.Nom),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

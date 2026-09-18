@@ -27,22 +27,22 @@ public class TennisApiTests
     {
         using var factory = new WebApplicationFactory<Program>();
         using var client = factory.CreateClient();
-        var joueur = new TennisPlayerDto
+        var joueur = new JoueurTennisDto
         {
             Id = 9_990_001,
-            Firstname = "Integration",
-            Lastname = "Test",
-            Shortname = "I.TEST",
-            Sex = "M",
-            Country = new CountryDto { Code = "FRA" },
-            Data = new PlayerDataDto
+            Prenom = "Integration",
+            Nom = "Test",
+            NomCourt = "I.TEST",
+            Sexe = "M",
+            Pays = new PaysDto { Code = "FRA" },
+            Donnees = new DonneesJoueurDto
             {
-                Rank = 999,
+                Rang = 999,
                 Points = 0,
-                Weight = 75_000,
-                Height = 180,
+                Poids = 75_000,
+                Taille = 180,
                 Age = 30,
-                Last = [1, 0, 1]
+                DerniersResultats = [1, 0, 1]
             }
         };
 
@@ -59,15 +59,15 @@ public class TennisApiTests
     {
         using var factory = new WebApplicationFactory<Program>();
         using var client = factory.CreateClient();
-        var joueurInvalide = new TennisPlayerDto
+        var joueurInvalide = new JoueurTennisDto
         {
             Id = 0,
-            Firstname = "",
-            Lastname = "",
-            Shortname = "",
-            Sex = "",
-            Country = new CountryDto { Code = "" },
-            Data = new PlayerDataDto()
+            Prenom = "",
+            Nom = "",
+            NomCourt = "",
+            Sexe = "",
+            Pays = new PaysDto { Code = "" },
+            Donnees = new DonneesJoueurDto()
         };
 
         var response = await client.PostAsJsonAsync("/api/players", joueurInvalide);
@@ -84,7 +84,7 @@ public class TennisApiTests
         var statistiques = await client.GetFromJsonAsync<StatistiquesDto>("/api/statistics");
 
         Assert.NotNull(statistiques);
-        Assert.Equal("SRB", statistiques.Country);
+        Assert.Equal("SRB", statistiques.Pays);
         Assert.Equal(185d, statistiques.Medianne);
         Assert.Equal(23.3578389955, statistiques.IMC, 6);
     }

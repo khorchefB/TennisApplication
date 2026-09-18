@@ -12,20 +12,20 @@ public sealed class GetGrandRatioPartiesGagneesQueryHandler(ITennisPlayerReposit
         var joueurs = await tennisPlayerRepository.GetTennisJoueurs(cancellationToken);
 
         var meilleurPays = joueurs
-            .Where(joueur => !string.IsNullOrWhiteSpace(joueur.Country.Code) && joueur.Data.Last.Count > 0)
-            .GroupBy(joueur => joueur.Country.Code)
+            .Where(joueur => !string.IsNullOrWhiteSpace(joueur.Pays.Code) && joueur.Donnees.DerniersResultats.Count > 0)
+            .GroupBy(joueur => joueur.Pays.Code)
             .Select(groupe => new
             {
-                Country = groupe.Key,
-                Victoires = groupe.Sum(joueur => joueur.Data.Last.Count(resultat => resultat == 1)),
-                Parties = groupe.Sum(joueur => joueur.Data.Last.Count)
+                Pays = groupe.Key,
+                Victoires = groupe.Sum(joueur => joueur.Donnees.DerniersResultats.Count(resultat => resultat == 1)),
+                Parties = groupe.Sum(joueur => joueur.Donnees.DerniersResultats.Count)
             })
             .Where(statistique => statistique.Parties > 0)
             .OrderByDescending(statistique => (double)statistique.Victoires / statistique.Parties)
-            .ThenBy(statistique => statistique.Country)
+            .ThenBy(statistique => statistique.Pays)
             .FirstOrDefault();
 
-        return meilleurPays?.Country
+        return meilleurPays?.Pays
             ?? throw new TennisStatisticsUnavailableException(
                 "Impossible de déterminer le pays avec le meilleur ratio de victoires.");
     }

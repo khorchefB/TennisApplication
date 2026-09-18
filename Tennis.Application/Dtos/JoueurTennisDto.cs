@@ -1,30 +1,42 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Tennis.Domain.Models;
+namespace Tennis.Application.Dtos;
 
-public class TennisJoueur
+public class JoueurTennisDto
 {
+    [Range(1, int.MaxValue)]
     [JsonPropertyName("id")]
     public int Id { get; set; }
 
+    [Required]
+    [StringLength(100)]
     [JsonPropertyName("firstname")]
     public string Prenom { get; set; } = string.Empty;
 
+    [Required]
+    [StringLength(100)]
     [JsonPropertyName("lastname")]
     public string Nom { get; set; } = string.Empty;
 
+    [Required]
+    [StringLength(20)]
     [JsonPropertyName("shortname")]
     public string NomCourt { get; set; } = string.Empty;
 
+    [Required]
+    [StringLength(10)]
     [JsonPropertyName("sex")]
     public string Sexe { get; set; } = string.Empty;
 
+    [Required]
     [JsonPropertyName("country")]
-    public Pays Pays { get; set; } = new();
+    public PaysDto Pays { get; set; } = new();
 
     [JsonPropertyName("picture")]
     public string Photo { get; set; } = string.Empty;
 
+    [Required]
     [JsonPropertyName("data")]
-    public DonneesJoueur Donnees { get; set; } = new();
+    public DonneesJoueurDto Donnees { get; set; } = new();
 }

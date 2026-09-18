@@ -18,7 +18,7 @@ public class GetTennisPlayerQueryHandlerTests
         var resultat = await handler.Handle(new GetTennisPlayerQuery(95), CancellationToken.None);
 
         Assert.Equal(95, resultat.Id);
-        Assert.Equal("Venus", resultat.Firstname);
+        Assert.Equal("Venus", resultat.Prenom);
         repositoryMock.Verify(
             repository => repository.GetTennisPlayer(95, It.IsAny<CancellationToken>()),
             Times.Once);

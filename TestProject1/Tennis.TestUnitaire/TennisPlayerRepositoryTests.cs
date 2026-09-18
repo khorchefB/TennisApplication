@@ -15,8 +15,8 @@ public class TennisPlayerRepositoryTests
         Assert.NotEmpty(joueurs);
         Assert.Contains(joueurs, joueur =>
             joueur.Id == 52 &&
-            joueur.Firstname == "Novak" &&
-            joueur.Lastname == "Djokovic");
+            joueur.Prenom == "Novak" &&
+            joueur.Nom == "Djokovic");
     }
 
     [Fact]
