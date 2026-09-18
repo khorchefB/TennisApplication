@@ -1,6 +1,6 @@
 ﻿namespace Tennis.Infrastructure.Repository;
 
-public class TennisPlayerRepository(IWebHostEnvironment _environment) : ITennisPlayerRepository
+public class TennisPlayerRepository : ITennisPlayerRepository
 {
     public async Task<TennisJoueur?> GetTennisPlayer(int idPlayer)
     {

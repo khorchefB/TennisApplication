@@ -41,6 +41,7 @@ public class TennisController(ITennisPlayerRepository tennisPlayerRepository,
     }
 
     [HttpPost]
+    [Route("players/ajouter")]
     public async Task AjouterJoueur(TennisJoueur joueur)
     {
 
