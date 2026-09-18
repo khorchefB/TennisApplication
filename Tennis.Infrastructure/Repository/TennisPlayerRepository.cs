@@ -1,7 +1,13 @@
-﻿namespace Tennis.Infrastructure.Repository;
+﻿
+namespace Tennis.Infrastructure.Repository;
 
-public class TennisPlayerRepository : ITennisPlayerRepository, IHostedService
+public sealed class TennisPlayerRepository : ITennisPlayerRepository, IHostedService
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly List<TennisJoueur> _players = [];
     private readonly SemaphoreSlim _playersLock = new(1, 1);
 
@@ -12,31 +18,38 @@ public class TennisPlayerRepository : ITennisPlayerRepository, IHostedService
             "Data",
             "headtohead.json");
 
-        var json = await File.ReadAllTextAsync(path, cancellationToken);
-        var players = JsonSerializer.Deserialize<TennisPlayers>(
-            json,
-            new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-        await _playersLock.WaitAsync(cancellationToken);
         try
         {
-            _players.Clear();
-            _players.AddRange(players?.Players ?? []);
+            var json = await File.ReadAllTextAsync(path, cancellationToken);
+            var players = JsonSerializer.Deserialize<TennisPlayers>(json, JsonOptions)
+                ?? throw new JsonException("Le fichier des joueurs ne contient aucune donnée exploitable.");
+
+            await _playersLock.WaitAsync(cancellationToken);
+            try
+            {
+                _players.Clear();
+                _players.AddRange(players.Players);
+            }
+            finally
+            {
+                _playersLock.Release();
+            }
         }
-        finally
+        catch (Exception exception) when (exception is IOException or JsonException)
         {
-            _playersLock.Release();
+            throw new TennisDataInitializationException(
+                $"Impossible de charger les données de tennis depuis '{path}'.",
+                exception);
         }
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    public async Task<TennisJoueur?> GetTennisPlayer(int idPlayer)
+    public async Task<TennisJoueur?> GetTennisPlayer(
+        int idPlayer,
+        CancellationToken cancellationToken = default)
     {
-        await _playersLock.WaitAsync();
+        await _playersLock.WaitAsync(cancellationToken);
         try
         {
             return _players.FirstOrDefault(player => player.Id == idPlayer);
@@ -47,12 +60,13 @@ public class TennisPlayerRepository : ITennisPlayerRepository, IHostedService
         }
     }
 
-    public async Task<IEnumerable<TennisJoueur>> GetTennisJoueurs()
+    public async Task<IReadOnlyCollection<TennisJoueur>> GetTennisJoueurs(
+        CancellationToken cancellationToken = default)
     {
-        await _playersLock.WaitAsync();
+        await _playersLock.WaitAsync(cancellationToken);
         try
         {
-            return _players.ToList();
+            return _players.ToArray();
         }
         finally
         {
@@ -60,14 +74,18 @@ public class TennisPlayerRepository : ITennisPlayerRepository, IHostedService
         }
     }
 
-    public async Task<TennisJoueur> AjouterTennisJoueur(TennisJoueur joueur)
+    public async Task<TennisJoueur> AjouterTennisJoueur(
+        TennisJoueur joueur,
+        CancellationToken cancellationToken = default)
     {
-        await _playersLock.WaitAsync();
+        ArgumentNullException.ThrowIfNull(joueur);
+
+        await _playersLock.WaitAsync(cancellationToken);
         try
         {
             if (_players.Any(player => player.Id == joueur.Id))
             {
-                throw new InvalidOperationException($"Un joueur avec l'identifiant {joueur.Id} existe déjà.");
+                throw new TennisPlayerAlreadyExistsException(joueur.Id);
             }
 
             _players.Add(joueur);

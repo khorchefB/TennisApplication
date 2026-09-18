@@ -1,5 +1,4 @@
 using Tennis.Application.Dtos;
-using Tennis.Domain.Dtos;
 
 namespace Tennis.Tests.Tennis.TestUnitaire;
 

@@ -1,19 +1,33 @@
-﻿
+using Tennis.Application.Exceptions;
 using Tennis.Domain.Models;
 
 namespace Tennis.Application.Queries;
 
-public class GetIMCJoueursQueryHandler(ITennisPlayerRepository tennisPlayerRepository) : IQueryHandler<GetIMCJoueursQuery, double>
+public sealed class GetIMCJoueursQueryHandler(ITennisPlayerRepository tennisPlayerRepository)
+    : IQueryHandler<GetIMCJoueursQuery, double>
 {
     public async Task<double> Handle(GetIMCJoueursQuery request, CancellationToken cancellationToken)
     {
-        var tennisjoueurs = await tennisPlayerRepository.GetTennisJoueurs();
-        return CalculerMoyenToutJoueurs(tennisjoueurs);
+        var joueurs = await tennisPlayerRepository.GetTennisJoueurs(cancellationToken);
+
+        if (joueurs.Count == 0)
+        {
+            throw new TennisStatisticsUnavailableException("Impossible de calculer l'IMC moyen : aucun joueur n'est disponible.");
+        }
+
+        return joueurs.Average(CalculerIMC);
     }
 
-    private double CalculerIMC(TennisJoueur joueur)
-        => joueur.Data.Weight / Math.Pow(joueur.Data.Height, 2);
+    private static double CalculerIMC(TennisJoueur joueur)
+    {
+        if (joueur.Data.Height <= 0 || joueur.Data.Weight <= 0)
+        {
+            throw new TennisStatisticsUnavailableException(
+                $"Les données de taille ou de poids du joueur {joueur.Id} sont invalides.");
+        }
 
-    private double CalculerMoyenToutJoueurs(IEnumerable<TennisJoueur> joueurs)
-        => joueurs.Select(joueur => CalculerIMC(joueur)).Sum(imc => imc) / joueurs.Count();
+        var poidsKg = joueur.Data.Weight / 1000d;
+        var tailleMetres = joueur.Data.Height / 100d;
+        return poidsKg / Math.Pow(tailleMetres, 2);
+    }
 }

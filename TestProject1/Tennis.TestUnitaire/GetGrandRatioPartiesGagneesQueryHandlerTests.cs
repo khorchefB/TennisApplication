@@ -1,33 +1,48 @@
+using Tennis.Application.Exceptions;
 
 namespace Tennis.Tests.Tennis.TestUnitaire;
 
 public class GetGrandRatioPartiesGagneesQueryHandlerTests
 {
     [Fact]
-    public async Task Handle_DoitInterrogerLeRepositoryEtRetournerLaValeurCalculeeParLeHandler()
+    public async Task Handle_DoitRetournerLePaysAvecLeMeilleurRatioDeVictoires()
     {
-        // Arrange
-        IEnumerable<TennisJoueur> joueurs =
-        [
-            TestData.CreerJoueur(id: 1, last: [1, 1, 1, 0, 1]),
-            TestData.CreerJoueur(id: 2, last: [0, 0, 1, 0, 0])
-        ];
+        var joueurSerbe = TestData.CreerJoueur(id: 1, last: [1, 1, 1, 1, 1]);
+        joueurSerbe.Country.Code = "SRB";
+        var joueurAmericain = TestData.CreerJoueur(id: 2, last: [1, 0, 0, 0, 0]);
+        joueurAmericain.Country.Code = "USA";
 
+        IReadOnlyCollection<TennisJoueur> joueurs = [joueurSerbe, joueurAmericain];
         var repositoryMock = new Mock<ITennisPlayerRepository>();
         repositoryMock
-            .Setup(repository => repository.GetTennisJoueurs())
+            .Setup(repository => repository.GetTennisJoueurs(It.IsAny<CancellationToken>()))
             .ReturnsAsync(joueurs);
 
         var handler = new GetGrandRatioPartiesGagneesQueryHandler(repositoryMock.Object);
 
-        // Act
         var resultat = await handler.Handle(
             new GetGrandRatioPartiesGagneesQuery(),
             CancellationToken.None);
 
-        // Assert
-        // Le handler actuel retourne 0 : ce test documente le comportement existant.
-        Assert.Equal(0, resultat);
-        repositoryMock.Verify(repository => repository.GetTennisJoueurs(), Times.Once);
+        Assert.Equal("SRB", resultat);
+        repositoryMock.Verify(
+            repository => repository.GetTennisJoueurs(It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_SansDonneesDeMatch_DoitLeverUneExceptionMetier()
+    {
+        var joueur = TestData.CreerJoueur(id: 1, last: []);
+        IReadOnlyCollection<TennisJoueur> joueurs = [joueur];
+        var repositoryMock = new Mock<ITennisPlayerRepository>();
+        repositoryMock
+            .Setup(repository => repository.GetTennisJoueurs(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(joueurs);
+
+        var handler = new GetGrandRatioPartiesGagneesQueryHandler(repositoryMock.Object);
+
+        await Assert.ThrowsAsync<TennisStatisticsUnavailableException>(
+            () => handler.Handle(new GetGrandRatioPartiesGagneesQuery(), CancellationToken.None));
     }
 }

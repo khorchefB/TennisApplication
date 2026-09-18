@@ -1,10 +1,3 @@
-﻿namespace Tennis.Application.Queries;
+namespace Tennis.Application.Queries;
 
-public class GetTennisPlayerQuery : IQuery<TennisPlayerDto>
-{
-    public GetTennisPlayerQuery(int idPlayer)
-    {
-        IdPlayer = idPlayer;
-    }
-    public int IdPlayer { get; set; }
-}
+public sealed record GetTennisPlayerQuery(int IdPlayer) : IQuery<TennisPlayerDto>;

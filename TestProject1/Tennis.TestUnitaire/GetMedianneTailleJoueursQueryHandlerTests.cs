@@ -1,3 +1,5 @@
+using Tennis.Application.Exceptions;
+
 namespace Tennis.Tests.Tennis.TestUnitaire;
 
 public class GetMedianneTailleJoueursQueryHandlerTests
@@ -5,8 +7,7 @@ public class GetMedianneTailleJoueursQueryHandlerTests
     [Fact]
     public async Task Handle_AvecUnNombreImpairDeJoueurs_DoitRetournerLaMediane()
     {
-        // Arrange
-        IEnumerable<TennisJoueur> joueurs =
+        IReadOnlyCollection<TennisJoueur> joueurs =
         [
             TestData.CreerJoueur(id: 1, height: 190),
             TestData.CreerJoueur(id: 2, height: 170),
@@ -15,26 +16,23 @@ public class GetMedianneTailleJoueursQueryHandlerTests
 
         var repositoryMock = new Mock<ITennisPlayerRepository>();
         repositoryMock
-            .Setup(repository => repository.GetTennisJoueurs())
+            .Setup(repository => repository.GetTennisJoueurs(It.IsAny<CancellationToken>()))
             .ReturnsAsync(joueurs);
 
         var handler = new GetMedianneTailleJoueursQueryHandler(repositoryMock.Object);
 
-        // Act
-        var resultat = await handler.Handle(
-            new GetMedianneTailleJoueursQuery(),
-            CancellationToken.None);
+        var resultat = await handler.Handle(new GetMedianneTailleJoueursQuery(), CancellationToken.None);
 
-        // Assert
         Assert.Equal(180d, resultat);
-        repositoryMock.Verify(repository => repository.GetTennisJoueurs(), Times.Once);
+        repositoryMock.Verify(
+            repository => repository.GetTennisJoueurs(It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
     public async Task Handle_AvecUnNombrePairDeJoueurs_DoitRetournerLaMoyenneDesDeuxValeursCentrales()
     {
-        // Arrange
-        IEnumerable<TennisJoueur> joueurs =
+        IReadOnlyCollection<TennisJoueur> joueurs =
         [
             TestData.CreerJoueur(id: 1, height: 170),
             TestData.CreerJoueur(id: 2, height: 180),
@@ -44,18 +42,27 @@ public class GetMedianneTailleJoueursQueryHandlerTests
 
         var repositoryMock = new Mock<ITennisPlayerRepository>();
         repositoryMock
-            .Setup(repository => repository.GetTennisJoueurs())
+            .Setup(repository => repository.GetTennisJoueurs(It.IsAny<CancellationToken>()))
             .ReturnsAsync(joueurs);
 
         var handler = new GetMedianneTailleJoueursQueryHandler(repositoryMock.Object);
 
-        // Act
-        var resultat = await handler.Handle(
-            new GetMedianneTailleJoueursQuery(),
-            CancellationToken.None);
+        var resultat = await handler.Handle(new GetMedianneTailleJoueursQuery(), CancellationToken.None);
 
-        // Assert
         Assert.Equal(185d, resultat);
-        repositoryMock.Verify(repository => repository.GetTennisJoueurs(), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_SansJoueur_DoitLeverUneExceptionMetier()
+    {
+        var repositoryMock = new Mock<ITennisPlayerRepository>();
+        repositoryMock
+            .Setup(repository => repository.GetTennisJoueurs(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Array.Empty<TennisJoueur>());
+
+        var handler = new GetMedianneTailleJoueursQueryHandler(repositoryMock.Object);
+
+        await Assert.ThrowsAsync<TennisStatisticsUnavailableException>(
+            () => handler.Handle(new GetMedianneTailleJoueursQuery(), CancellationToken.None));
     }
 }

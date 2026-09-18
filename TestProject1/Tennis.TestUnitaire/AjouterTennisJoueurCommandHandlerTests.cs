@@ -1,24 +1,24 @@
 namespace Tennis.Tests.Tennis.TestUnitaire;
 
-public class AjouterTennisJouteurCommandHandlerTests
+public class AjouterTennisJoueurCommandHandlerTests
 {
     [Fact]
     public async Task Handle_DoitAjouterEtRetournerLeJoueur()
     {
-        // Arrange
         var repositoryMock = new Mock<ITennisPlayerRepository>();
         repositoryMock
-            .Setup(repository => repository.AjouterTennisJoueur(It.IsAny<TennisJoueur>()))
-            .ReturnsAsync((TennisJoueur joueur) => joueur);
+            .Setup(repository => repository.AjouterTennisJoueur(
+                It.IsAny<TennisJoueur>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((TennisJoueur joueur, CancellationToken _) => joueur);
 
-        var handler = new AjouterTennisJouteurCommandHandler(repositoryMock.Object);
+        var handler = new AjouterTennisJoueurCommandHandler(repositoryMock.Object);
         var joueur = TestData.CreerJoueurDto(id: 999_001);
-        var command = new AjouterTennisJouteurCommand(joueur);
 
-        // Act
-        var resultat = await handler.Handle(command, CancellationToken.None);
+        var resultat = await handler.Handle(
+            new AjouterTennisJoueurCommand(joueur),
+            CancellationToken.None);
 
-        // Assert
         Assert.Equal(joueur.Id, resultat.Id);
         Assert.Equal(joueur.Firstname, resultat.Firstname);
         Assert.Equal(joueur.Lastname, resultat.Lastname);
@@ -28,7 +28,8 @@ public class AjouterTennisJouteurCommandHandlerTests
                 It.Is<TennisJoueur>(joueurAjoute =>
                     joueurAjoute.Id == joueur.Id &&
                     joueurAjoute.Firstname == joueur.Firstname &&
-                    joueurAjoute.Lastname == joueur.Lastname)),
+                    joueurAjoute.Lastname == joueur.Lastname),
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

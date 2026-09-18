@@ -1,5 +1,3 @@
-﻿namespace Tennis.Application.Queries;
+namespace Tennis.Application.Queries;
 
-public class GetMedianneTailleJoueursQuery : IQuery<double>
-{
-}
+public sealed record GetMedianneTailleJoueursQuery : IQuery<double>;

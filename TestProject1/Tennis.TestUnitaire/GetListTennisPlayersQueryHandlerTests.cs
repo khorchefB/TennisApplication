@@ -3,10 +3,9 @@ namespace Tennis.Tests.Tennis.TestUnitaire;
 public class GetListTennisPlayersQueryHandlerTests
 {
     [Fact]
-    public async Task Handle_DoitRetournerLesJoueursTriesParRankDecroissant()
+    public async Task Handle_DoitRetournerLesJoueursDuMeilleurAuMoinsBonRang()
     {
-        // Arrange
-        IEnumerable<TennisJoueur> joueurs =
+        IReadOnlyCollection<TennisJoueur> joueurs =
         [
             TestData.CreerJoueur(id: 1, rank: 1, firstname: "Novak"),
             TestData.CreerJoueur(id: 2, rank: 50, firstname: "Venus"),
@@ -15,18 +14,18 @@ public class GetListTennisPlayersQueryHandlerTests
 
         var repositoryMock = new Mock<ITennisPlayerRepository>();
         repositoryMock
-            .Setup(repository => repository.GetTennisJoueurs())
+            .Setup(repository => repository.GetTennisJoueurs(It.IsAny<CancellationToken>()))
             .ReturnsAsync(joueurs);
 
         var handler = new GetListTennisPlayersQueryHandler(repositoryMock.Object);
 
-        // Act
-        var resultat = (await handler.Handle(
+        var resultat = await handler.Handle(
             new GetListTennisPlayersQuery(),
-            CancellationToken.None))!.ToList();
+            CancellationToken.None);
 
-        // Assert
-        Assert.Equal(new[] { 2, 3, 1 }, resultat.Select(joueur => joueur.Id));
-        repositoryMock.Verify(repository => repository.GetTennisJoueurs(), Times.Once);
+        Assert.Equal(new[] { 1, 3, 2 }, resultat.Select(joueur => joueur.Id));
+        repositoryMock.Verify(
+            repository => repository.GetTennisJoueurs(It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

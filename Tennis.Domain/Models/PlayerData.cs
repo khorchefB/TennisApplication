@@ -1,4 +1,4 @@
-﻿namespace Tennis.Domain.Dtos;
+namespace Tennis.Domain.Models;
 
 public class PlayerData
 {
@@ -7,5 +7,5 @@ public class PlayerData
     public int Weight { get; set; }
     public int Height { get; set; }
     public int Age { get; set; }
-    public List<int> Last { get; set; }
+    public List<int> Last { get; set; } = [];
 }

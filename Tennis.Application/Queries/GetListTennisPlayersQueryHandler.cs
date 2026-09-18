@@ -1,8 +1,13 @@
-﻿
 namespace Tennis.Application.Queries;
 
-public class GetListTennisPlayersQueryHandler(ITennisPlayerRepository tennisPlayerRepository) : IQueryHandler<GetListTennisPlayersQuery, IEnumerable<TennisPlayerDto>?>
+public sealed class GetListTennisPlayersQueryHandler(ITennisPlayerRepository tennisPlayerRepository)
+    : IQueryHandler<GetListTennisPlayersQuery, IReadOnlyCollection<TennisPlayerDto>>
 {
-    public async Task<IEnumerable<TennisPlayerDto>?> Handle(GetListTennisPlayersQuery request, CancellationToken cancellationToken)
-     => (await tennisPlayerRepository.GetTennisJoueurs()).OrderByDescending(player => player.Data.Rank).Adapt<IEnumerable<TennisPlayerDto>>();
+    public async Task<IReadOnlyCollection<TennisPlayerDto>> Handle(
+        GetListTennisPlayersQuery request,
+        CancellationToken cancellationToken)
+        => (await tennisPlayerRepository.GetTennisJoueurs(cancellationToken))
+            .OrderBy(player => player.Data.Rank)
+            .Select(player => player.Adapt<TennisPlayerDto>())
+            .ToArray();
 }

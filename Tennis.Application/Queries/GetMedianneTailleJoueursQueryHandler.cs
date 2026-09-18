@@ -1,37 +1,27 @@
-﻿using Tennis.Domain.Models;
+using Tennis.Application.Exceptions;
 
 namespace Tennis.Application.Queries;
 
-public class GetMedianneTailleJoueursQueryHandler(ITennisPlayerRepository tennisPlayerRepository) : IQueryHandler<GetMedianneTailleJoueursQuery, double>
+public sealed class GetMedianneTailleJoueursQueryHandler(ITennisPlayerRepository tennisPlayerRepository)
+    : IQueryHandler<GetMedianneTailleJoueursQuery, double>
 {
-    public async Task<double> Handle(GetMedianneTailleJoueursQuery request, CancellationToken cancellationToken)
+    public async Task<double> Handle(
+        GetMedianneTailleJoueursQuery request,
+        CancellationToken cancellationToken)
     {
-        var tennisjoueurs = await tennisPlayerRepository.GetTennisJoueurs();
-        return GetMedianne(tennisjoueurs);
-    }
+        var hauteurs = (await tennisPlayerRepository.GetTennisJoueurs(cancellationToken))
+            .Select(joueur => joueur.Data.Height)
+            .OrderBy(hauteur => hauteur)
+            .ToArray();
 
-    private double GetMedianne(IEnumerable<TennisJoueur> tennisJoueurs)
-    {
-        var hauteursTries = GetHauteursTriesGetHauteurs(tennisJoueurs);
-        return Mediane(hauteursTries);
-    }
-
-    private int[] GetHauteursTriesGetHauteurs(IEnumerable<TennisJoueur> tennisJoueurs)
-        => tennisJoueurs.Select(tennisjoueur => tennisjoueur.Data.Height).ToArray();
-
-    private double Mediane(int[] hauteursjoueurs)
-    {
-        Array.Sort(hauteursjoueurs);
-
-        int n = hauteursjoueurs.Length;
-
-        if (n % 2 == 1)
+        if (hauteurs.Length == 0)
         {
-            return hauteursjoueurs[n / 2];
+            throw new TennisStatisticsUnavailableException("Impossible de calculer la médiane : aucun joueur n'est disponible.");
         }
-        else
-        {
-            return ((double)hauteursjoueurs[n / 2 - 1] + hauteursjoueurs[n / 2]) / 2;
-        }
+
+        var milieu = hauteurs.Length / 2;
+        return hauteurs.Length % 2 == 1
+            ? hauteurs[milieu]
+            : (hauteurs[milieu - 1] + hauteurs[milieu]) / 2d;
     }
 }

@@ -1,5 +1,3 @@
-﻿namespace Tennis.Application.Queries;
+namespace Tennis.Application.Queries;
 
-public class GetIMCJoueursQuery : IQuery<double>
-{
-}
+public sealed record GetIMCJoueursQuery : IQuery<double>;

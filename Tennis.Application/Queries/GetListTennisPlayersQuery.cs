@@ -1,5 +1,3 @@
-﻿namespace Tennis.Application.Queries;
+namespace Tennis.Application.Queries;
 
-public class GetListTennisPlayersQuery : IQuery<IEnumerable<TennisPlayerDto>?>
-{
-}
+public sealed record GetListTennisPlayersQuery : IQuery<IReadOnlyCollection<TennisPlayerDto>>;
