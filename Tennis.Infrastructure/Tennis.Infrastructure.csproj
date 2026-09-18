@@ -15,5 +15,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Tennis.Application\Tennis.Application.csproj" />
   </ItemGroup>
-
+	<ItemGroup>
+		<None Update="Data\headtohead.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</None>
+	</ItemGroup>
 </Project>

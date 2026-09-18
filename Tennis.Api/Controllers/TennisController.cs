@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Tennis.Application.Commands;
 
 namespace Tennis.Api.Controllers;
 
@@ -40,10 +41,20 @@ public class TennisController(ITennisPlayerRepository tennisPlayerRepository,
         return new StatistiquesDto { Ratio = ratio, IMC = imcMoyen, Medianne = medianne };
     }
 
-    [HttpPost]
-    [Route("players/ajouter")]
-    public async Task AjouterJoueur(TennisJoueur joueur)
+    [HttpPost("players/ajouter")]
+    public async Task<ActionResult<TennisPlayerDto>> AjouterJoueur(
+        [FromBody] TennisPlayerDto joueur,
+        CancellationToken cancellationToken)
     {
-
+        try
+        {
+            var command = new AjouterTennisJouteurCommand(joueur);
+            var joueurAjoute = await sender.Send(command, cancellationToken);
+            return joueurAjoute;
+        }
+        catch (InvalidOperationException exception)
+        {
+            return Conflict(new { message = exception.Message });
+        }
     }
 }

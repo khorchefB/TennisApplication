@@ -6,4 +6,5 @@ public interface ITennisPlayerRepository
 {
     Task<IEnumerable<TennisJoueur>> GetTennisJoueurs();
     Task<TennisJoueur?> GetTennisPlayer(int idPlayer);
+    Task<TennisJoueur> AjouterTennisJoueur(TennisJoueur joueur);
 }
