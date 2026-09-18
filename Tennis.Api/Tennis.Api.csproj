@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Tennis.Application\Tennis.Application.csproj" />
+    <ProjectReference Include="..\Tennis.Infrastructure\Tennis.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
